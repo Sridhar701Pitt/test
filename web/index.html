@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Rust Wasm Clicker Game</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+        button { font-size: 24px; padding: 10px 20px; }
+    </style>
+    <script type="module">
+        import init, { Game } from './game.js';
+
+        async function run() {
+            await init();
+            const game = new Game();
+            const btn = document.getElementById('click');
+            const score = document.getElementById('score');
+
+            btn.addEventListener('click', () => {
+                score.textContent = game.click();
+            });
+
+            document.getElementById('reset').addEventListener('click', () => {
+                game.reset();
+                score.textContent = '0';
+            });
+        }
+        run();
+    </script>
+</head>
+<body>
+    <h1>Rust Wasm Clicker Game</h1>
+    <p>Score: <span id="score">0</span></p>
+    <button id="click">Click me!</button>
+    <button id="reset">Reset</button>
+</body>
+</html>
