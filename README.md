@@ -1,6 +1,6 @@
 # Rust WebAssembly Clicker Game
 
-This repository contains a minimal clicker game written in Rust and compiled to WebAssembly.
+This repository contains a minimal clicker game written in Rust and compiled to WebAssembly. The WebGPU canvas now reacts to the current score and you can run a **Prime Bonus** mode that computes thousands of prime numbers to add extra points.
 
 ## Building
 

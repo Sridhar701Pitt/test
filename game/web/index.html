@@ -14,25 +14,31 @@
 
         async function run() {
             await init();
-            startGpu();
+            const gpu = await startGpu();
             const game = new Game();
             const btn = document.getElementById('click');
             const score = document.getElementById('score');
             const multDisplay = document.getElementById('multiplier');
             let multiplier = 1;
             let auto = null;
+            function updateScoreDisplay(val) {
+                score.textContent = val.toString();
+                gpu.setScore(val);
+            }
 
             function doClick() {
+                let val = 0;
                 for (let i = 0; i < multiplier; i++) {
-                    score.textContent = game.click();
+                    val = game.click();
                 }
+                updateScoreDisplay(val);
             }
 
             btn.addEventListener('click', doClick);
 
             document.getElementById('reset').addEventListener('click', () => {
                 game.reset();
-                score.textContent = '0';
+                updateScoreDisplay(0);
                 multiplier = 1;
                 multDisplay.textContent = multiplier.toString();
                 if (auto) {
@@ -58,9 +64,10 @@
                 }
             });
 
-            document.getElementById('crazy').addEventListener('click', () => {
-                let total = 0;
-                for (let i = 2; i < 5000; i++) {
+            document.getElementById('prime').addEventListener('click', () => {
+                const limit = 10000;
+                const primes = [];
+                for (let i = 2; i < limit; i++) {
                     let prime = true;
                     for (let j = 2; j * j <= i; j++) {
                         if (i % j === 0) {
@@ -69,12 +76,14 @@
                         }
                     }
                     if (prime) {
-                        total += i;
+                        primes.push(i);
                     }
                 }
-                document.body.style.backgroundColor =
-                    '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
-                console.log('Crazy compute result:', total);
+                let final = 0;
+                for (let i = 0; i < primes.length; i++) {
+                    final = game.click();
+                }
+                updateScoreDisplay(final);
             });
         }
         run();
@@ -88,7 +97,7 @@
     <button id="reset">Reset</button>
     <button id="upgrade">Upgrade</button>
     <button id="auto">Start Auto Click</button>
-    <button id="crazy">Crazy Mode</button>
+    <button id="prime">Prime Bonus</button>
     <div style="margin-top:20px;">
         <canvas id="gpu-canvas" width="640" height="480"></canvas>
     </div>

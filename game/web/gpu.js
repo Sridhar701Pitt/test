@@ -17,13 +17,14 @@ export async function startGpu() {
     context.configure({ device, format, alphaMode: 'opaque' });
 
     const uniformBuffer = device.createBuffer({
-        size: 4,
+        size: 8,
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
+    let currentScore = 0;
 
     const shaderModule = device.createShaderModule({
         code: `
-struct Uniforms { time : f32 };
+struct Uniforms { time : f32, score : f32 };
 @group(0) @binding(0) var<uniform> uniforms : Uniforms;
 
 @vertex
@@ -38,10 +39,11 @@ fn vs_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<
 
 @fragment
 fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
+    let base = uniforms.time + uniforms.score * 0.1;
     let color = vec3<f32>(
-        abs(sin(pos.x * 0.01 + uniforms.time)),
-        abs(cos(pos.y * 0.01 + uniforms.time)),
-        abs(sin((pos.x + pos.y) * 0.01 + uniforms.time))
+        abs(sin(pos.x * 0.01 + base)),
+        abs(cos(pos.y * 0.01 + base)),
+        abs(sin((pos.x + pos.y) * 0.01 + base))
     );
     return vec4<f32>(color, 1.0);
 }
@@ -77,7 +79,11 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
             }],
         });
 
-        device.queue.writeBuffer(uniformBuffer, 0, new Float32Array([time / 1000]));
+        device.queue.writeBuffer(
+            uniformBuffer,
+            0,
+            new Float32Array([time / 1000, currentScore])
+        );
         pass.setPipeline(pipeline);
         pass.setBindGroup(0, bindGroup);
         pass.draw(3, 1, 0, 0);
@@ -87,4 +93,9 @@ fn fs_main(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
     }
 
     requestAnimationFrame(frame);
+    return {
+        setScore: (val) => {
+            currentScore = val;
+        },
+    };
 }
