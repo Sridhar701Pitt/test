@@ -18,7 +18,14 @@ cargo build --release --target wasm32-unknown-unknown
 wasm-bindgen --target web --out-dir web target/wasm32-unknown-unknown/release/game.wasm
 ```
 
-3. Open `web/index.html` in a browser to play the game.
+3. Serve the `web` directory with a local HTTP server and open the page in your
+   browser. One simple option is Python's built in server:
+
+   ```sh
+   python -m http.server -d web
+   ```
+
+   Then browse to `http://localhost:8000/`.
 
 ## Windows instructions
 
@@ -33,8 +40,8 @@ cargo build --release --target wasm32-unknown-unknown
 wasm-bindgen --target web --out-dir web target\wasm32-unknown-unknown\release\game.wasm
 ```
 
-You can open `web\index.html` directly in your browser or serve the `web`
-directory with a static file server such as:
+Serve the `web` directory with a static file server after building. For
+example, using Python's built in server:
 
 ```powershell
 python -m http.server -d web
