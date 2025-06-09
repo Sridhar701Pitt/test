@@ -5,7 +5,7 @@
     <title>Rust Wasm Clicker Game</title>
     <style>
         body { font-family: sans-serif; text-align: center; margin-top: 50px; }
-        button { font-size: 24px; padding: 10px 20px; }
+        button { font-size: 24px; padding: 10px 20px; margin: 5px; }
     </style>
     <script type="module">
         import init, { Game } from './game.js';
@@ -15,14 +15,63 @@
             const game = new Game();
             const btn = document.getElementById('click');
             const score = document.getElementById('score');
+            const multDisplay = document.getElementById('multiplier');
+            let multiplier = 1;
+            let auto = null;
 
-            btn.addEventListener('click', () => {
-                score.textContent = game.click();
-            });
+            function doClick() {
+                for (let i = 0; i < multiplier; i++) {
+                    score.textContent = game.click();
+                }
+            }
+
+            btn.addEventListener('click', doClick);
 
             document.getElementById('reset').addEventListener('click', () => {
                 game.reset();
                 score.textContent = '0';
+                multiplier = 1;
+                multDisplay.textContent = multiplier.toString();
+                if (auto) {
+                    clearInterval(auto);
+                    auto = null;
+                    document.getElementById('auto').textContent = 'Start Auto Click';
+                }
+            });
+
+            document.getElementById('upgrade').addEventListener('click', () => {
+                multiplier += 1;
+                multDisplay.textContent = multiplier.toString();
+            });
+
+            document.getElementById('auto').addEventListener('click', () => {
+                if (auto) {
+                    clearInterval(auto);
+                    auto = null;
+                    document.getElementById('auto').textContent = 'Start Auto Click';
+                } else {
+                    auto = setInterval(doClick, 100);
+                    document.getElementById('auto').textContent = 'Stop Auto Click';
+                }
+            });
+
+            document.getElementById('crazy').addEventListener('click', () => {
+                let total = 0;
+                for (let i = 2; i < 5000; i++) {
+                    let prime = true;
+                    for (let j = 2; j * j <= i; j++) {
+                        if (i % j === 0) {
+                            prime = false;
+                            break;
+                        }
+                    }
+                    if (prime) {
+                        total += i;
+                    }
+                }
+                document.body.style.backgroundColor =
+                    '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0');
+                console.log('Crazy compute result:', total);
             });
         }
         run();
@@ -31,7 +80,11 @@
 <body>
     <h1>Rust Wasm Clicker Game</h1>
     <p>Score: <span id="score">0</span></p>
+    <p>Multiplier: <span id="multiplier">1</span></p>
     <button id="click">Click me!</button>
     <button id="reset">Reset</button>
+    <button id="upgrade">Upgrade</button>
+    <button id="auto">Start Auto Click</button>
+    <button id="crazy">Crazy Mode</button>
 </body>
 </html>
