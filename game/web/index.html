@@ -7,15 +7,26 @@
         body { font-family: sans-serif; text-align: center; margin-top: 50px; }
         button { font-size: 24px; padding: 10px 20px; margin: 5px; }
         canvas { border: 1px solid black; }
+        #three-canvas { display: block; margin: 10px auto; }
     </style>
     <script type="module">
         import init, { Game } from './game.js';
         import { startGpu } from './gpu.js';
+        import { startZombies } from './zombies.js';
 
         async function run() {
             await init();
             const gpu = await startGpu();
             const game = new Game();
+            const zombies = await startZombies(() => {
+                const val = game.click();
+                updateScoreDisplay(val);
+                if (val >= 20) {
+                    alert('You escaped the hyper dimension!');
+                    game.reset();
+                    updateScoreDisplay(0);
+                }
+            });
             const btn = document.getElementById('click');
             const score = document.getElementById('score');
             const multDisplay = document.getElementById('multiplier');
@@ -100,6 +111,7 @@
     <button id="prime">Prime Bonus</button>
     <div style="margin-top:20px;">
         <canvas id="gpu-canvas" width="640" height="480"></canvas>
+        <canvas id="three-canvas" width="640" height="480"></canvas>
     </div>
 </body>
 </html>
