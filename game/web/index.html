@@ -6,12 +6,15 @@
     <style>
         body { font-family: sans-serif; text-align: center; margin-top: 50px; }
         button { font-size: 24px; padding: 10px 20px; margin: 5px; }
+        canvas { border: 1px solid black; }
     </style>
     <script type="module">
         import init, { Game } from './game.js';
+        import { startGpu } from './gpu.js';
 
         async function run() {
             await init();
+            startGpu();
             const game = new Game();
             const btn = document.getElementById('click');
             const score = document.getElementById('score');
@@ -86,5 +89,8 @@
     <button id="upgrade">Upgrade</button>
     <button id="auto">Start Auto Click</button>
     <button id="crazy">Crazy Mode</button>
+    <div style="margin-top:20px;">
+        <canvas id="gpu-canvas" width="640" height="480"></canvas>
+    </div>
 </body>
 </html>
